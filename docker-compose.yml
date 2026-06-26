@@ -1,0 +1,87 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: casino-db
+    environment:
+      POSTGRES_USER: casino
+      POSTGRES_PASSWORD: casino
+      POSTGRES_DB: casino_db
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - casino-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U casino"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    container_name: casino-backend
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: casino
+      DB_PASSWORD: casino
+      DB_NAME: casino_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    networks:
+      - casino-net
+
+  frontend:
+    build: ../frontend_intro_devops_casino
+    container_name: casino-frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    networks:
+      - casino-net
+
+  bonos:
+    build: ../bonos-service
+    container_name: bonos-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8004:8004"
+    networks:
+      - casino-net
+
+  apuestas:
+    build: ../apuestas-service
+    container_name: apuestas-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8005:8005"
+    networks:
+      - casino-net
+
+  estadisticas:
+    build: ../estadisticas-service
+    container_name: estadisticas-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8006:8006"
+    networks:
+      - casino-net
+
+networks:
+  casino-net:
+    driver: bridge
+
+volumes:
+  pg_data:
