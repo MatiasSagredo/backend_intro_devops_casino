@@ -1,0 +1,13 @@
+node_modules
+.env
+.env.example
+*.log
+coverage
+.DS_Store
+./.gitignore
+./.git/
+README.md
+
+# Claude Code
+.claude/
+CLAUDE.md
