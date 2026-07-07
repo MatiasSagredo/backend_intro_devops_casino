@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_USER: casino
       POSTGRES_PASSWORD: casino
-      POSTGRES_DB: casino_db
+      POSTGRES_DB: casino
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - pg_data:/var/lib/postgresql/data
@@ -19,7 +19,7 @@ services:
       timeout: 5s
       retries: 5
 
-  backend:
+  casino-backend:
     build: .
     container_name: casino-backend
     environment:
@@ -27,7 +27,7 @@ services:
       DB_PORT: 5432
       DB_USER: casino
       DB_PASSWORD: casino
-      DB_NAME: casino_db
+      DB_NAME: casino
     depends_on:
       postgres:
         condition: service_healthy
@@ -36,44 +36,64 @@ services:
     networks:
       - casino-net
 
-  frontend:
+  casino-frontend:
     build: ../frontend_intro_devops_casino
     container_name: casino-frontend
     depends_on:
-      - backend
+      - casino-backend
     ports:
-      - "8080:80"
+      - "8080:8080"
     networks:
       - casino-net
-
-  bonos:
+  bonos-service:
     build: ../bonos-service
     container_name: bonos-service
     depends_on:
       postgres:
         condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: casino
+      DB_PASSWORD: casino
+      DB_NAME: casino
+
     ports:
       - "8004:8004"
     networks:
       - casino-net
 
-  apuestas:
+  apuestas-service:
     build: ../apuestas-service
     container_name: apuestas-service
     depends_on:
       postgres:
         condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: casino
+      DB_PASSWORD: casino
+      DB_NAME: casino
+
     ports:
       - "8005:8005"
     networks:
       - casino-net
 
-  estadisticas:
+  estadisticas-service:
     build: ../estadisticas-service
     container_name: estadisticas-service
     depends_on:
       postgres:
         condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: casino
+      DB_PASSWORD: casino
+      DB_NAME: casino
+
     ports:
       - "8006:8006"
     networks:
