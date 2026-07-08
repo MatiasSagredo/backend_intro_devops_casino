@@ -49,9 +49,9 @@ app.get('/', (req, res) => {
 });
 
 // Rutas de la API
-app.use('/api/auth',          require('./routes/auth'));
-app.use('/api/usuarios',      require('./routes/users'));
-app.use('/api/juegos',        require('./routes/games'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/usuarios', require('./routes/users'));
+app.use('/api/juegos', require('./routes/games'));
 app.use('/api/transacciones', require('./routes/transactions'));
 
 // Manejador global de errores (cuatro parámetros = Express lo identifica como error handler).
