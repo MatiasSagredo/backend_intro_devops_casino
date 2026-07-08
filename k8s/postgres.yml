@@ -39,7 +39,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: postgres-service
+  namespace: vidalcasino
 spec:
   selector:
     app: postgres
